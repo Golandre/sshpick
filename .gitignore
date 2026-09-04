@@ -1,0 +1,4 @@
+/sshpick
+*.exe
+*.test
+/dist/
