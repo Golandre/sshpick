@@ -11,6 +11,7 @@ package tui
 import (
 	"fmt"
 	"strings"
+	"unicode/utf8"
 
 	tea "github.com/charmbracelet/bubbletea"
 
@@ -80,13 +81,24 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 			return m, nil
 
-		case tea.KeyBackspace:
+		case tea.KeyBackspace, tea.KeyCtrlH:
+			// KeyBackspace is the DEL byte (0x7f); KeyCtrlH is the 0x08 byte
+			// some terminals send for the Backspace key. Handle both so the
+			// user can always delete a typo.
 			if len(m.query) > 0 {
-				// Remove last character. Go strings are immutable byte slices;
-				// slicing like this is safe for ASCII host filters.
-				m.query = m.query[:len(m.query)-1]
+				// Remove the last rune (not just the last byte) so multi-byte
+				// Unicode characters are deleted cleanly.
+				_, size := utf8.DecodeLastRuneInString(m.query)
+				m.query = m.query[:len(m.query)-size]
 				m.refilter()
 			}
+			return m, nil
+
+		case tea.KeySpace:
+			// Spaces arrive as their own key type (not KeyRunes); capture
+			// them so multi-word filters like "sk1 tapp" work as expected.
+			m.query += " "
+			m.refilter()
 			return m, nil
 
 		case tea.KeyRunes:

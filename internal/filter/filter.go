@@ -3,24 +3,38 @@ package filter
 
 import "strings"
 
-// Match returns hosts that contain query as a substring (case-insensitive).
+// Match returns hosts that contain every whitespace-separated token of query
+// as a case-insensitive substring.
 //
-// An empty query returns nil/empty slice on purpose: the TUI should show
-// no list until the user types at least one character.
+// An empty (or whitespace-only) query returns nil on purpose: the TUI should
+// show no list until the user types at least one character.
 //
 // We return a new slice; we never modify the input hosts slice.
 func Match(query string, hosts []string) []string {
-	query = strings.TrimSpace(query)
-	if query == "" {
+	// strings.Fields splits on any whitespace and drops empty tokens, so
+	// "sk1  tapp" behaves the same as "sk1 tapp".
+	fields := strings.Fields(query)
+	if len(fields) == 0 {
 		return nil
 	}
 
-	// Fold both sides to lower case so "NSK" matches "nsk1-ex-tav01".
-	q := strings.ToLower(query)
+	// Fold each token to lower case once so "NSK1" matches "nsk1-ex-tav01".
+	tokens := make([]string, len(fields))
+	for i, f := range fields {
+		tokens[i] = strings.ToLower(f)
+	}
 
 	var out []string
 	for _, h := range hosts {
-		if strings.Contains(strings.ToLower(h), q) {
+		lh := strings.ToLower(h)
+		match := true
+		for _, t := range tokens {
+			if !strings.Contains(lh, t) {
+				match = false
+				break
+			}
+		}
+		if match {
 			out = append(out, h)
 		}
 	}

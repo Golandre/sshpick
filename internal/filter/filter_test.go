@@ -40,3 +40,26 @@ func TestMatch_shrinksAsQueryGrows(t *testing.T) {
 		t.Fatalf("after full name: %v", got)
 	}
 }
+
+func TestMatch_multiTokenAND(t *testing.T) {
+	hosts := []string{"sk1-ex-etapp", "sk1-ex-tapp", "msk2-ex-web03"}
+
+	// Every token must be present for a host to match.
+	got := Match("sk1 tapp", hosts)
+	if len(got) != 2 || got[0] != "sk1-ex-etapp" || got[1] != "sk1-ex-tapp" {
+		t.Fatalf("Match(sk1 tapp) = %v, want both sk1-ex-etapp and sk1-ex-tapp", got)
+	}
+
+	// Extra whitespace should behave the same.
+	got = Match("  sk1   tapp  ", hosts)
+	if len(got) != 2 {
+		t.Fatalf("Match with extra whitespace = %v, want 2 hosts", got)
+	}
+
+	// A token only one host contains narrows the list down.
+	got = Match("sk1 etapp", hosts)
+	if len(got) != 1 || got[0] != "sk1-ex-etapp" {
+		t.Fatalf("Match(sk1 etapp) = %v, want [sk1-ex-etapp]", got)
+	}
+}
+
