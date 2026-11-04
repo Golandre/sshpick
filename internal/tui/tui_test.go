@@ -18,7 +18,7 @@ func press(t *testing.T, m Model, k tea.KeyMsg) Model {
 }
 
 func TestUpdate_spaceIsCaptured(t *testing.T) {
-	m := New([]string{"sk1-ex-etapp", "sk1-ex-tapp"})
+	m := New([]string{"sk1-etapp", "sk1-tapp"})
 
 	m = press(t, m, tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune("sk1")})
 	m = press(t, m, tea.KeyMsg{Type: tea.KeySpace})
@@ -33,7 +33,7 @@ func TestUpdate_spaceIsCaptured(t *testing.T) {
 }
 
 func TestUpdate_backspaceRemovesLastRune(t *testing.T) {
-	m := New([]string{"sk1-ex-etapp"})
+	m := New([]string{"sk1-etapp"})
 	m = press(t, m, tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune("sk1")})
 
 	// Both DEL (KeyBackspace) and Ctrl+H (KeyCtrlH) must delete a character.

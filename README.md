@@ -8,7 +8,7 @@ Create the hosts file (the tool never creates it for you):
 
 ```bash
 mkdir -p ~/.ssh
-printf '%s\n' 'nsk1-ex-tav01' 'msk2-ex-web03' >> ~/.ssh/ssh_hosts
+printf '%s\n' 'nsk-tav01' 'sk2-web03' >> ~/.ssh/ssh_hosts
 chmod 600 ~/.ssh/ssh_hosts
 ```
 

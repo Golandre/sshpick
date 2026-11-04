@@ -12,7 +12,7 @@ func TestLoad_skipsBlankLines(t *testing.T) {
 	dir := t.TempDir()
 	path := filepath.Join(dir, "ssh_hosts")
 
-	content := "nsk1-ex-tav01\n\n  \nmsk2-ex-web03\n"
+	content := "nsk1-tav01\n\n  \ntpk2-web03\n"
 	if err := os.WriteFile(path, []byte(content), 0o600); err != nil {
 		t.Fatalf("write temp file: %v", err)
 	}
@@ -22,7 +22,7 @@ func TestLoad_skipsBlankLines(t *testing.T) {
 		t.Fatalf("Load: %v", err)
 	}
 
-	want := []string{"nsk1-ex-tav01", "msk2-ex-web03"}
+	want := []string{"nsk1-tav01", "tpk2-web03"}
 	if len(got) != len(want) {
 		t.Fatalf("len = %d, want %d (%v)", len(got), len(want), got)
 	}
